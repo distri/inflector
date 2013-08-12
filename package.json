@@ -4,6 +4,7 @@
   "description": "A better port of ActiveSupport Inflector to JS.",
   "main": "dist/inflector.js",
   "scripts": {
+    "prepublish": "script/prepublish",
     "test": "script/test"
   },
   "repository": {
