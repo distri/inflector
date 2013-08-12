@@ -318,6 +318,21 @@ Ordinalize converts all found numbers to their sequence name i.e. "22" => "22nd"
 
         .join " "
 
+Add all of these sweet inflections to `String.prototype`. I prefer it, but hey, it's up to you!
+
+You can just `require('inflecta').pollute()`
+
+      pollute: ->
+        Object.keys(inflector).forEach (key) ->
+          # Skip the `version` and `pollute` properties
+          return if key is "version"
+          return if key is "pollute"
+
+          String::[key] = (args...) ->
+            inflector[key](this, args...)
+
+        return inflector
+
 Expose the current version.
 
     pkg = require('../package.json')
