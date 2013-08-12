@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/STRd6/inflecta.png?branch=master)](https://travis-ci.org/STRd6/inflecta)
+
 Inflecta
 ========
 
