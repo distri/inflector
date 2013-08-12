@@ -318,13 +318,12 @@ Ordinalize converts all found numbers to their sequence name i.e. "22" => "22nd"
 
         .join " "
 
-Add all of these sweet inflections to `String.prototype`. I prefer it, but hey, it's up to you!
+Adds all of these sweet inflections to `String.prototype`. To each their own.
 
-You can just `require('inflecta').pollute()`
+`require('inflecta').pollute()` if you are so inclined.
 
       pollute: ->
         Object.keys(inflector).forEach (key) ->
-          # Skip the `version` and `pollute` properties
           return if key is "version"
           return if key is "pollute"
 
