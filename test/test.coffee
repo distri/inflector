@@ -113,27 +113,6 @@ describe "Inflector", ->
       Inflector.titleize("message_properties").should.equal "Message Properties"
       Inflector.titleize("message properties to keep").should.equal "Message Properties to Keep"
 
-  describe "ordinalize", ->
-    it "should replace numbers with word numbers", ->
-      Inflector.ordinalize("the 1 pitch").should.equal "the 1st pitch"
-      Inflector.ordinalize("the 2 pitch").should.equal "the 2nd pitch"
-      Inflector.ordinalize("the 3 pitch").should.equal "the 3rd pitch"
-      Inflector.ordinalize("the 4 pitch").should.equal "the 4th pitch"
-
-      Inflector.ordinalize("the 11 pitch").should.equal "the 11th pitch"
-      Inflector.ordinalize("the 12 pitch").should.equal "the 12th pitch"
-      Inflector.ordinalize("the 13 pitch").should.equal "the 13th pitch"
-      Inflector.ordinalize("the 14 pitch").should.equal "the 14th pitch"
-
-      Inflector.ordinalize("the 21 pitch").should.equal "the 21st pitch"
-      Inflector.ordinalize("the 22 pitch").should.equal "the 22nd pitch"
-      Inflector.ordinalize("the 23 pitch").should.equal "the 23rd pitch"
-      Inflector.ordinalize("the 24 pitch").should.equal "the 24th pitch"
-
-      Inflector.ordinalize("the 18 pitch").should.equal "the 18th pitch"
-      Inflector.ordinalize("the 27 pitch").should.equal "the 27th pitch"
-      Inflector.ordinalize("the 69 pitch").should.equal "the 69th pitch"
-
   describe "underscore", ->
     it "should convert camelCased words to underscored words", ->
       Inflector.underscore("MessageProperties").should.equal "message_properties"

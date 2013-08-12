@@ -289,35 +289,6 @@ Classify converts a string into something that would be suitable for lookup via 
         str = inflector.singularize(str)
         str
 
-Ordinalize converts all found numbers to their sequence name i.e. "22" => "22nd".
-
-      ordinalize: (str) ->
-        suffix = (number) ->
-          lastDigit = number.substr(-1)
-          lastTwoDigits = number.substr(-2)
-
-          switch lastTwoDigits
-            when "11", "12", "13"
-              "th"
-            else
-              switch lastDigit
-                when "1"
-                  "st"
-                when "2"
-                  "nd"
-                when "3"
-                  "rd"
-                else
-                  "th"
-
-        str.split(" ").map (piece) ->
-          if isNaN(parseInt(piece, 10))
-            piece
-          else
-            piece + suffix(piece)
-
-        .join " "
-
 Adds all of these sweet inflections to `String.prototype`. To each their own.
 
 `require('inflecta').pollute()` if you are so inclined.
