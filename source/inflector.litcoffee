@@ -1,162 +1,11 @@
-This is a list of nouns that use the same form for both singular and plural.
-This list should remain entirely in lower case to correctly match Strings.
+Load our word lists and rules for inflecting from [rules](rules.html).
 
-    uncountableWords = """
-      equipment
-      information
-      rice
-      money
-      species
-      series
-      fish
-      sheep
-      moose
-      deer
-      news
-    """.split("\n")
-
-This matcher helper will let us construct rules easier.
-
-    matcher = (string, replacement="$&") ->
-      [RegExp(string, "gi"), replacement]
-
-A little helper to convert blocks of rules text into arrays of matchers.
-
-    toArrays = (text) ->
-      text.split("\n").map (line) ->
-        matcher line.split(" ").filter((piece) -> piece != "")...
-
-These rules translate from the singular form of a noun to its plural form.
-
-    pluralRules = toArrays """
-      (m)en$
-      (pe)ople$
-      (child)ren$
-      ([ti])a$
-      ((a)naly|(b)a|(d)iagno|(p)arenthe|(p)rogno|(s)ynop|(t)he)ses$
-      (hive)s$
-      (tive)s$
-      (curve)s$
-      ([lr])ves$
-      ([^fo])ves$
-      ([^aeiouy]|qu)ies$
-      (s)eries$
-      (m)ovies$
-      (x|ch|ss|sh)es$
-      ([m|l])ice$
-      (bus)es$
-      (o)es$
-      (shoe)s$
-      (cris|ax|test)es$
-      (octop|vir)i$
-      (alias|status)es$
-      ^(ox)en$
-      (vert|ind)ices$
-      (matr)ices$
-      (quiz)zes$
-      (m)an$                 $1en
-      (pe)rson$              $1ople
-      (child)$               $1ren
-      ^(ox)$                 $1en
-      (ax|test)is$           $1es
-      (octop|vir)us$         $1i
-      (alias|status)$        $1es
-      (u)s$                  $1ses
-      (buffal|tomat|potat)o$ $1oes
-      ([ti])um$              $1a
-      sis$                   ses
-      (?:([^f])fe|([lr])f)$  $1$2ves
-      (hive)$                $1s
-      ([^aeiouy]|qu)y$       $1ies
-      (x|ch|ss|sh)$          $1es
-      (matr|vert|ind)ix|ex$  $1ices
-      ([m|l])ouse$           $1ice
-      (quiz)$                $1zes
-      s$                     s
-      $                      s
-    """
-
-These rules translate from the plural form of a noun to its singular form.
-
-    singularRules = toArrays """
-      (m)an$
-      (pe)rson$
-      (child)$
-      ^(ox)$
-      (ax|test)is$
-      (octop|vir)us$
-      (alias|status)$
-      (b)ie$
-      ([br]u)s$
-      (buffal|tomat|potat)o$
-      ([ti])um$
-      sis$
-      (?:([^f])fe|([lr])f)$
-      (hive)$
-      ([^aeiouy]|qu)y$
-      (x|ch|ss|sh)$
-      (matr|vert|ind)ix|ex$
-      ([m|l])ouse$
-      (quiz)$
-      (m)en$                  $1an
-      (pe)ople$               $1rson
-      (child)ren$             $1
-      ([ti])a$                $1um
-      ((a)naly|(b)a|(d)iagno|(p)arenthe|(p)rogno|(s)ynop|(t)he)ses$ $1$2sis
-      (hive)s$                $1
-      (tive)s$                $1
-      (curve)s$               $1
-      ([lr])ves$              $1f
-      ([^fo])ves$             $1fe
-      (bie)s                  $1
-      ([^aeiouy]|qu)ies$      $1y
-      (s)eries$               $1eries
-      (m)ovies$               $1ovie
-      (x|ch|ss|sh)es$         $1
-      ([m|l])ice$             $1ouse
-      (us)es$                 $1
-      (o)es$                  $1
-      (shoe)s$                $1
-      (cris|ax|test)es$       $1is
-      (octop|vir)i$           $1us
-      (alias|status)es$       $1
-      ^(ox)en                 $1
-      (vert|ind)ices$         $1ex
-      (matr)ices$             $1ix
-      (quiz)zes$              $1
-      ss$                     ss
-    """
-
-A special case for replacing the last s with an empty string.
-
-    singularRules.push matcher("s$", "")
-
-This is a list of words that should not be capitalized for title case.
-
-    nonTitlecasedWords = """
-      and
-      or
-      nor
-      a
-      an
-      the
-      so
-      but
-      to
-      of
-      at
-      by
-      from
-      into
-      on
-      onto
-      off
-      out
-      in
-      over
-      with
-      for
-    """.split("\n")
+    {
+      nonTitlecasedWords
+      pluralRules
+      singularRules
+      uncountableWords
+    } = require("./rules")
 
 These are regular expressions used for converting between String formats.
 
@@ -170,32 +19,33 @@ These are regular expressions used for converting between String formats.
 
 The apply rules helper method applies a rules based replacement to a String.
 
-    applyRules = (str, rules, override) ->
-      return override if override
+    applyRules = (string, rules) ->
+      return string if uncountableWords.indexOf(string.toLowerCase()) > -1
 
-      return str if uncountableWords.indexOf(str.toLowerCase()) > -1
+Reduce the list of rules to the first substitution that matches and apply it.
 
       rules.reduce((result, [rule, replacer]) ->
         result or
-          if str.match(rule)
-            # console.log "matched #{rule}:#{replacer}"
-            str.replace(rule, replacer)
+          if string.match(rule)
+            string.replace(rule, replacer)
 
-      , null) or str
+Return the string unmodified if no rule matches.
 
-Hold all of our inflection methods.
+      , null) or string
+
+An object to hold all of our inflection methods.
 
     inflector =
 
-This function adds pluralization support to every String object.
+Convert a string to a pluralized form by applying a list of rules. The rules contain regexes that match and replace portions of the string to transform it.
 
-      pluralize: (string, plural) ->
-        applyRules string, pluralRules, plural
+      pluralize: (string) ->
+        applyRules string, pluralRules
 
-This function adds singularization support to every String object.
+Conversely we can also convert a string to a singular form by applying another list of rules.
 
-      singularize: (string, singular) ->
-        applyRules string, singularRules, singular
+      singularize: (string) ->
+        applyRules string, singularRules
 
 Camelize converts an underscore separated identifier into camel case. The optional parameter lowercaseFirstLetter can be passed in as `true` to prevent the default behavior of capitalizing it. File separators `/` are translated to the scope resolution operator `.`.
 
@@ -256,7 +106,9 @@ When capitalizing a string all characters will be lower case and the first will 
         string = string.toLowerCase()
         string.substring(0, 1).toUpperCase() + string.substring(1)
 
-Titleize capitalizes words as you would for a book title.
+Titleize capitalizes words as you would for a book title or page. Each principle word is capitalized.
+
+`"a man for all seasons".titleize() # => "A Man for All Seasons"`
 
       titleize: (string) ->
         result = string
@@ -277,17 +129,13 @@ Titleize capitalizes words as you would for a book title.
 
 Tableize converts property names to something that would be used for a table name in SQL. It converts camel cased words into their underscored plural form.
 
-      tableize: (str) ->
-        str = inflector.underscore(str)
-        str = inflector.pluralize(str)
-        str
+      tableize: (string) ->
+        inflector.pluralize(inflector.underscore(string))
 
 Classify converts a string into something that would be suitable for lookup via constantize. Underscored plural nouns become the camel cased singular form.
 
       classify: (str) ->
-        str = inflector.camelize(str)
-        str = inflector.singularize(str)
-        str
+        inflector.singularize(inflector.camelize(str))
 
 Adds all of these sweet inflections to `String.prototype`. To each their own.
 
@@ -303,10 +151,9 @@ Adds all of these sweet inflections to `String.prototype`. To each their own.
 
         return inflector
 
-Expose the current version.
+Expose the current version from `package.json`.
 
-    pkg = require('../package.json')
-    inflector.version = pkg.version
+    inflector.version = require('../package.json').version
 
 Export the inflector.
 
