@@ -166,6 +166,7 @@ These are regular expressions used for converting between String formats.
     uppercase = RegExp("([A-Z])", "g")
     underbarPrefix = RegExp("^_")
     scopeResolution = "."
+    fileSeparator = "/"
 
 The apply rules helper method applies a rules based replacement to a String.
 
@@ -188,19 +189,19 @@ Hold all of our inflection methods.
 
 This function adds pluralization support to every String object.
 
-      pluralize: (str, plural) ->
-        applyRules str, pluralRules, plural
+      pluralize: (string, plural) ->
+        applyRules string, pluralRules, plural
 
 This function adds singularization support to every String object.
 
-      singularize: (str, singular) ->
-        applyRules str, singularRules, singular
+      singularize: (string, singular) ->
+        applyRules string, singularRules, singular
 
 Camelize converts an underscore separated identifier into camel case. The optional parameter lowercaseFirstLetter can be passed in as `true` to prevent the default behavior of capitalizing it. File separators `/` are translated to the scope resolution operator `.`.
 
-      camelize: (str, lowercaseFirstLetter) ->
-        str.split("/").map (pathItem) ->
-          pathItem.split("_").map (chunk, i) ->
+      camelize: (string, lowercaseFirstLetter) ->
+        string.split(fileSeparator).map (pathItem) ->
+          pathItem.split(underbar).map (chunk, i) ->
             if lowercaseFirstLetter and i is 0
               chunk
             else
@@ -209,7 +210,7 @@ Camelize converts an underscore separated identifier into camel case. The option
           .join("")
         .join scopeResolution
 
-Constantize looks up a class from within a namespace.
+Constantize looks up a class from within a namespace. For example `"MyApp.Models.MyModel".constantize()` will look up that constant in the global namespace. You can optionally pass the root namespace as an argument. `"Models.MyModel".constantize(MyApp)` will look up the constant in with the given namespace as a root.
 
       constantize: (string, rootModule) ->
         target = rootModule ? (global ? window)
@@ -224,55 +225,55 @@ The optional parameter allUpperCase can be set to true to return unchanged strin
 
 Camel cased words are returned as lower cased and underscored. Additionally the scope resolution symbol `.` is translated to file separator: '/'.
 
-      underscore: (str, allUpperCase) ->
-        return str if allUpperCase and str is str.toUpperCase()
+      underscore: (string, allUpperCase) ->
+        if allUpperCase and string is string.toUpperCase()
+          return string
 
-        str.split(scopeResolution).map (chunk) ->
+        string.split(scopeResolution).map (chunk) ->
           chunk
             .replace(uppercase, "_$1")
             .replace(underbarPrefix, "")
-        .join("/").toLowerCase()
+        .join(fileSeparator).toLowerCase()
 
 Humanize takes words that computers like to read and converts them to a form that is easier for people. Lower case underscored words will be returned in humanized form, as will camel cased words.
 
 Passing true as the optional parameter will maintain the first letter as lowercase. The default is to capitalize the first letter if false or no optional parameter is passed.
 
-      humanize: (str, lowFirstLetter) ->
-        str = inflector.underscore(str)
+      humanize: (string, lowFirstLetter) ->
+        string = inflector.underscore(string)
           .toLowerCase()
           .replace(idSuffix, "")
           .replace(underbar, " ")
 
         unless lowFirstLetter
-          str = inflector.capitalize(str)
+          string = inflector.capitalize(string)
 
-        return str
+        return string
 
 When capitalizing a string all characters will be lower case and the first will be upper.
 
-      capitalize: (str) ->
-        str = str.toLowerCase()
-        str.substring(0, 1).toUpperCase() + str.substring(1)
+      capitalize: (string) ->
+        string = string.toLowerCase()
+        string.substring(0, 1).toUpperCase() + string.substring(1)
 
 Titleize capitalizes words as you would for a book title.
 
-      titleize: (str) ->
-        str = str.toLowerCase().replace(underbar, " ")
-        str_arr = str.split(" ")
-        i = 0
-        j = str_arr.length
-        while i < j
-          d = str_arr[i].split("-")
-          k = 0
-          l = d.length
-          while k < l
-            d[k] = inflector.capitalize(d[k]) if nonTitlecasedWords.indexOf(d[k].toLowerCase()) < 0
-            k++
-          str_arr[i] = d.join("-")
-          i++
-        str = str_arr.join(" ")
-        str = str.substring(0, 1).toUpperCase() + str.substring(1)
-        str
+      titleize: (string) ->
+        result = string
+          .toLowerCase()
+          .replace(underbar, " ")
+          .split(" ")
+          .map (chunk) ->
+            chunk.split("-").map (piece) ->
+              if nonTitlecasedWords.indexOf(piece.toLowerCase()) < 0
+                inflector.capitalize(piece)
+              else
+                piece
+            .join("-")
+
+          .join(" ")
+
+        result.substring(0, 1).toUpperCase() + result.substring(1)
 
 Tableize converts property names to something that would be used for a table name in SQL. It converts camel cased words into their underscored plural form.
 
