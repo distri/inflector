@@ -1,0 +1,29 @@
+{
+  "name": "inflecta",
+  "version": "0.8.1",
+  "description": "A better port of ActiveSupport Inflector to JS.",
+  "main": "dist/inflector.js",
+  "scripts": {
+    "test": "script/test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/STRd6/inflector"
+  },
+  "keywords": [
+    "inflector"
+  ],
+  "devDependencies": {
+    "node.flow": "1.2.2",
+    "should": "1.2.2",
+    "coffee-script": "~1.6.3",
+    "mocha": "~1.12.0",
+    "uglify-js": "~2.3.6",
+    "docco": "~0.6.2"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/STRd6/inflector/issues"
+  }
+}
