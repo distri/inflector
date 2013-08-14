@@ -39,10 +39,44 @@ An object to hold all of our inflection methods.
 
 Convert a string to a pluralized form by applying a list of rules. The rules contain regexes that match and replace portions of the string to transform it.
 
+>     #! pluralize
+>     address
+>     boss
+>     bus
+>     cat
+>     child
+>     duder
+>     Hat
+>     man
+>     woman
+>     zombie
+>     octopus
+>     walrus
+>     guy
+>     person
+>     status
+
       pluralize: (string) ->
         applyRules string, pluralRules
 
 Conversely we can also convert a string to a singular form by applying another list of rules.
+
+>     #! singularize
+>     addresses
+>     bosses
+>     buses
+>     cats
+>     children
+>     duders
+>     Hats
+>     men
+>     women
+>     zombies
+>     octopi
+>     walruses
+>     guys
+>     people
+>     statuses
 
       singularize: (string) ->
         applyRules string, singularRules
