@@ -505,7 +505,7 @@ pre .tex .formula {
 }
 
 #container .example .annotation{
-  min-width: 300px;
+  min-width: 250px;
 }
 
 p.error {

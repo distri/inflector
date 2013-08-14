@@ -43,16 +43,12 @@ Convert a string to a pluralized form by applying a list of rules. The rules con
 >     address
 >     boss
 >     bus
->     cat
 >     child
->     duder
->     Hat
 >     man
 >     woman
 >     zombie
 >     octopus
 >     walrus
->     guy
 >     person
 >     status
 
@@ -65,16 +61,12 @@ Conversely we can also convert a string to a singular form by applying another l
 >     addresses
 >     bosses
 >     buses
->     cats
 >     children
->     duders
->     Hats
 >     men
 >     women
 >     zombies
 >     octopi
 >     walruses
->     guys
 >     people
 >     statuses
 
@@ -82,6 +74,10 @@ Conversely we can also convert a string to a singular form by applying another l
         applyRules string, singularRules
 
 Camelize converts an underscore separated identifier into camel case. The optional parameter lowercaseFirstLetter can be passed in as `true` to prevent the default behavior of capitalizing it. File separators `/` are translated to the scope resolution operator `.`.
+
+>     #! camelize
+>     message_properties
+>     models/person
 
       camelize: (string, lowercaseFirstLetter) ->
         string.split(fileSeparator).map (pathItem) ->
@@ -109,6 +105,10 @@ The optional parameter allUpperCase can be set to true to return unchanged strin
 
 Camel cased words are returned as lower cased and underscored. Additionally the scope resolution symbol `.` is translated to file separator: '/'.
 
+>     #! underscore
+>     messageProperties
+>     Models.Person
+
       underscore: (string, allUpperCase) ->
         if allUpperCase and string is string.toUpperCase()
           return string
@@ -123,6 +123,10 @@ Humanize takes words that computers like to read and converts them to a form tha
 
 Passing true as the optional parameter will maintain the first letter as lowercase. The default is to capitalize the first letter if false or no optional parameter is passed.
 
+>     #! humanize
+>     message_property_id
+>     userPreferences
+
       humanize: (string, lowFirstLetter) ->
         string = inflector.underscore(string)
           .toLowerCase()
@@ -136,13 +140,20 @@ Passing true as the optional parameter will maintain the first letter as lowerca
 
 When capitalizing a string all characters will be lower case and the first will be upper.
 
+>     #! capitalize
+>     egg basket
+>     user preferences
+
       capitalize: (string) ->
         string = string.toLowerCase()
         string.substring(0, 1).toUpperCase() + string.substring(1)
 
 Titleize capitalizes words as you would for a book title or page. Each principle word is capitalized.
 
-`"a man for all seasons".titleize() # => "A Man for All Seasons"`
+>     #! titleize
+>     a man for all seasons
+>     customer_support
+>     aboutUs
 
       titleize: (string) ->
         result = string
@@ -163,10 +174,19 @@ Titleize capitalizes words as you would for a book title or page. Each principle
 
 Tableize converts property names to something that would be used for a table name in SQL. It converts camel cased words into their underscored plural form.
 
+>     #! tableize
+>     sandwich
+>     userPreferences
+
       tableize: (string) ->
         inflector.pluralize(inflector.underscore(string))
 
 Classify converts a string into something that would be suitable for lookup via constantize. Underscored plural nouns become the camel cased singular form.
+
+>     #! classify
+>     sandwich
+>     user_preference
+>     app/models/person
 
       classify: (str) ->
         inflector.singularize(inflector.camelize(str))
