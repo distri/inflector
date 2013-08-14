@@ -105,7 +105,7 @@ fileSeparator = <span class="string">"/"</span></pre></div></div>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
-              <p>Reuce the list of rules to the first substitution that matches and apply it.</p>
+              <p>Reduce the list of rules to the first substitution that matches and apply it.</p>
 
             </div>
             
@@ -154,6 +154,20 @@ fileSeparator = <span class="string">"/"</span></pre></div></div>
                 <a class="pilcrow" href="#section-7">&#182;</a>
               </div>
               <p>Convert a string to a pluralized form by applying a list of rules. The rules contain regexes that match and replace portions of the string to transform it.</p>
+<blockquote>
+<pre><code>#! pluralize
+address
+boss
+bus
+child
+man
+woman
+zombie
+octopus
+walrus
+person
+status</code></pre>
+</blockquote>
 
             </div>
             
@@ -170,6 +184,20 @@ fileSeparator = <span class="string">"/"</span></pre></div></div>
                 <a class="pilcrow" href="#section-8">&#182;</a>
               </div>
               <p>Conversely we can also convert a string to a singular form by applying another list of rules.</p>
+<blockquote>
+<pre><code>#! singularize
+addresses
+bosses
+buses
+children
+men
+women
+zombies
+octopi
+walruses
+people
+statuses</code></pre>
+</blockquote>
 
             </div>
             
@@ -186,6 +214,11 @@ fileSeparator = <span class="string">"/"</span></pre></div></div>
                 <a class="pilcrow" href="#section-9">&#182;</a>
               </div>
               <p>Camelize converts an underscore separated identifier into camel case. The optional parameter lowercaseFirstLetter can be passed in as <code>true</code> to prevent the default behavior of capitalizing it. File separators <code>/</code> are translated to the scope resolution operator <code>.</code>.</p>
+<blockquote>
+<pre><code>#! camelize
+message_properties
+models/person</code></pre>
+</blockquote>
 
             </div>
             
@@ -232,6 +265,11 @@ fileSeparator = <span class="string">"/"</span></pre></div></div>
               <p>Underscoring converts an identifier into lowercase separated by underscores. This is handy for file names or interfacing with services that prefer underscored names to camel cased.</p>
 <p>The optional parameter allUpperCase can be set to true to return unchanged strings that are currently all upercase characters.</p>
 <p>Camel cased words are returned as lower cased and underscored. Additionally the scope resolution symbol <code>.</code> is translated to file separator: &#39;/&#39;.</p>
+<blockquote>
+<pre><code>#! underscore
+messageProperties
+Models.Person</code></pre>
+</blockquote>
 
             </div>
             
@@ -256,6 +294,11 @@ fileSeparator = <span class="string">"/"</span></pre></div></div>
               </div>
               <p>Humanize takes words that computers like to read and converts them to a form that is easier for people. Lower case underscored words will be returned in humanized form, as will camel cased words.</p>
 <p>Passing true as the optional parameter will maintain the first letter as lowercase. The default is to capitalize the first letter if false or no optional parameter is passed.</p>
+<blockquote>
+<pre><code>#! humanize
+message_property_id
+userPreferences</code></pre>
+</blockquote>
 
             </div>
             
@@ -280,6 +323,11 @@ fileSeparator = <span class="string">"/"</span></pre></div></div>
                 <a class="pilcrow" href="#section-13">&#182;</a>
               </div>
               <p>When capitalizing a string all characters will be lower case and the first will be upper.</p>
+<blockquote>
+<pre><code>#! capitalize
+egg basket
+user preferences</code></pre>
+</blockquote>
 
             </div>
             
@@ -297,7 +345,12 @@ fileSeparator = <span class="string">"/"</span></pre></div></div>
                 <a class="pilcrow" href="#section-14">&#182;</a>
               </div>
               <p>Titleize capitalizes words as you would for a book title or page. Each principle word is capitalized.</p>
-<p><code>&quot;a man for all seasons&quot;.titleize() # =&gt; &quot;A Man for All Seasons&quot;</code></p>
+<blockquote>
+<pre><code>#! titleize
+a man for all seasons
+customer_support
+aboutUs</code></pre>
+</blockquote>
 
             </div>
             
@@ -328,6 +381,11 @@ fileSeparator = <span class="string">"/"</span></pre></div></div>
                 <a class="pilcrow" href="#section-15">&#182;</a>
               </div>
               <p>Tableize converts property names to something that would be used for a table name in SQL. It converts camel cased words into their underscored plural form.</p>
+<blockquote>
+<pre><code>#! tableize
+sandwich
+userPreferences</code></pre>
+</blockquote>
 
             </div>
             
@@ -344,6 +402,12 @@ fileSeparator = <span class="string">"/"</span></pre></div></div>
                 <a class="pilcrow" href="#section-16">&#182;</a>
               </div>
               <p>Classify converts a string into something that would be suitable for lookup via constantize. Underscored plural nouns become the camel cased singular form.</p>
+<blockquote>
+<pre><code>#! classify
+sandwich
+user_preference
+app/models/person</code></pre>
+</blockquote>
 
             </div>
             
@@ -408,5 +472,9 @@ fileSeparator = <span class="string">"/"</span></pre></div></div>
         
     </ul>
   </div>
+  <script src="javascripts/zepto.min.js"></script>
+  <script src="javascripts/coffee-script.js"></script>
+  <script src="javascripts/inflector.js"></script>
+  <script src="javascripts/interactive.js"></script>
 </body>
 </html>
