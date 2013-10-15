@@ -101,22 +101,19 @@ Constantize looks up a class from within a namespace. For example `"MyApp.Models
 
 Underscoring converts an identifier into lowercase separated by underscores. This is handy for file names or interfacing with services that prefer underscored names to camel cased.
 
-The optional parameter allUpperCase can be set to true to return unchanged strings that are currently all upercase characters.
-
 Camel cased words are returned as lower cased and underscored. Additionally the scope resolution symbol `.` is translated to file separator: '/'.
 
 >     #! underscore
 >     messageProperties
 >     Models.Person
 
-      underscore: (string, allUpperCase) ->
-        if allUpperCase and string is string.toUpperCase()
-          return string
-
+      underscore: (string) ->
         string.split(scopeResolution).map (chunk) ->
           chunk
-            .replace(uppercase, "_$1")
-            .replace(underbarPrefix, "")
+            .replace(/([A-Z]+)([A-Z][a-z])/g, '$1_$2')
+            .replace(/([a-z\d])([A-Z])/g, '$1_$2')
+            .replace(/-/g, '_')
+            .toLowerCase()
         .join(fileSeparator).toLowerCase()
 
 Humanize takes words that computers like to read and converts them to a form that is easier for people. Lower case underscored words will be returned in humanized form, as will camel cased words.
@@ -190,6 +187,13 @@ Classify converts a string into something that would be suitable for lookup via 
 
       classify: (str) ->
         inflector.singularize(inflector.camelize(str))
+
+Convert a string with spaces and mixed case into all lower case with spaces replaced with dashes. This is the style that Github branch names are commonly in.
+
+      dasherize: (str) ->
+        str.trim()
+          .replace(/\s+/g, "-")
+          .toLowerCase()
 
 Adds all of these sweet inflections to `String.prototype`. To each their own.
 

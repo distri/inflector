@@ -119,5 +119,9 @@ describe "Inflector", ->
       Inflector.underscore("messageProperties").should.equal "message_properties"
 
     it "should deal with acronyms", ->
-      Inflector.underscore("MP").should.equal "m_p"
-      Inflector.underscore("MP", true).should.equal "MP"
+      Inflector.underscore("MP").should.equal "mp"
+      Inflector.underscore("HTTPConnection").should.equal "http_connection"
+
+  describe "dasherize", ->
+    it "should convert words with spaces into words with dashes", ->
+      Inflector.dasherize("A really cool Feature").should.equal "a-really-cool-feature"
