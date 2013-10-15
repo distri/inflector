@@ -1,7 +1,4 @@
 Inflector = require("../source/inflector")
-pkg = require('../package.json')
-
-should = require("should")
 
 sampleData = """
   address       addresses
@@ -24,54 +21,51 @@ sampleData = """
     piece != ""
 
 describe "Inflector", ->
-  it "should expose the correct version number", ->
-    Inflector.version.should.equal pkg.version
-
   describe "pluralize", ->
     sampleData.forEach ([singular, plural]) ->
       it "#{singular} as #{plural}", ->
-        Inflector.pluralize(singular).should.equal plural
+        assert.equal Inflector.pluralize(singular), plural
 
       it "#{plural} as #{plural}", ->
-        Inflector.pluralize(plural).should.equal plural
+        assert.equal Inflector.pluralize(plural), plural
 
   describe "singularize", ->
     sampleData.forEach ([singular, plural]) ->
       it "#{plural} as #{singular}", ->
-        Inflector.singularize(plural).should.equal singular
+        assert.equal Inflector.singularize(plural), singular
 
       it "#{singular} as #{singular}", ->
-        Inflector.singularize(singular).should.equal singular
+        assert.equal Inflector.singularize(singular), singular
 
   describe "camelize", ->
     it "message_properties as MessageProperties", ->
-      Inflector.camelize("message_properties").should.equal "MessageProperties"
+      assert.equal Inflector.camelize("message_properties"), "MessageProperties"
 
     it "message_properties, true as messageProperties", ->
-      Inflector.camelize("message_properties", true).should.equal "messageProperties"
+      assert.equal Inflector.camelize("message_properties", true), "messageProperties"
 
     it "should replace / with scope resolution operator", ->
-      Inflector.camelize("models/person").should.equal "Models.Person"
+      assert.equal Inflector.camelize("models/person"), "Models.Person"
 
     it "shouldn't overdo it", ->
-      Inflector.camelize(Inflector.camelize("anAlreadyCamelizedDude")).should.equal "AnAlreadyCamelizedDude"
+      assert.equal Inflector.camelize(Inflector.camelize("anAlreadyCamelizedDude")), "AnAlreadyCamelizedDude"
 
   describe "classify", ->
     it "should convert a property name into a class name suitable for lookup", ->
-      Inflector.classify("message_bus_properties").should.equal "MessageBusProperty"
+      assert.equal Inflector.classify("message_bus_properties"), "MessageBusProperty"
 
     it "should work for camel cased names too", ->
-      Inflector.classify("messageBusProperties").should.equal "MessageBusProperty"
+      assert.equal Inflector.classify("messageBusProperties"), "MessageBusProperty"
 
     it "should convert directory separators to namespaces", ->
-      Inflector.classify("models/message_bus_properties").should.equal "Models.MessageBusProperty"
+      assert.equal Inflector.classify("models/message_bus_properties"), "Models.MessageBusProperty"
 
   describe "capitalize", ->
     it "should work on underscored words", ->
-      Inflector.capitalize("message_properties").should.equal "Message_properties"
+      assert.equal Inflector.capitalize("message_properties"), "Message_properties"
 
     it "should work on normal words", ->
-      Inflector.capitalize("message properties").should.equal "Message properties"
+      assert.equal Inflector.capitalize("message properties"), "Message properties"
 
   describe "constantize", ->
     # Namespace for testing
@@ -80,48 +74,48 @@ describe "Inflector", ->
         Person: {}
 
     it "should look up global constants", ->
-      Inflector.constantize("String").should.equal String
-      Inflector.constantize("Number").should.equal Number
-      Inflector.constantize("Object").should.equal Object
+      assert.equal Inflector.constantize("String"), String
+      assert.equal Inflector.constantize("Number"), Number
+      assert.equal Inflector.constantize("Object"), Object
 
     it "should traverse namespaces", ->
-      Inflector.constantize("Models.Person", Tempest).should.equal Tempest.Models.Person
+      assert.equal Inflector.constantize("Models.Person", Tempest), Tempest.Models.Person
 
     it "should work with classify", ->
-      Inflector.constantize(Inflector.classify("models/person"), Tempest).should.equal Tempest.Models.Person
+      assert.equal Inflector.constantize(Inflector.classify("models/person"), Tempest), Tempest.Models.Person
 
   describe "humanize", ->
     it "should replace underscores with spaces", ->
-      Inflector.humanize("message_properties").should.equal "Message properties"
-      Inflector.humanize("message_properties", true).should.equal "message properties"
+      assert.equal Inflector.humanize("message_properties"), "Message properties"
+      assert.equal Inflector.humanize("message_properties", true), "message properties"
 
     it "should remove id suffixes", ->
-      Inflector.humanize("message_id").should.equal "Message"
-      Inflector.humanize("messageId").should.equal "Message"
+      assert.equal Inflector.humanize("message_id"), "Message"
+      assert.equal Inflector.humanize("messageId"), "Message"
 
     it "should also work for camelCased words", ->
-      Inflector.humanize("messageProperties").should.equal "Message properties"
-      Inflector.humanize("messageProperties", true).should.equal "message properties"
+      assert.equal Inflector.humanize("messageProperties"), "Message properties"
+      assert.equal Inflector.humanize("messageProperties", true), "message properties"
 
   describe "tableize", ->
     it "should transform words for use in storage solutions", ->
-      Inflector.tableize("people").should.equal "people"
-      Inflector.tableize("MessageBusProperty").should.equal "message_bus_properties"
+      assert.equal Inflector.tableize("people"), "people"
+      assert.equal Inflector.tableize("MessageBusProperty"), "message_bus_properties"
 
   describe "titleize", ->
     it "should transform words to title case", ->
-      Inflector.titleize("message_properties").should.equal "Message Properties"
-      Inflector.titleize("message properties to keep").should.equal "Message Properties to Keep"
+      assert.equal Inflector.titleize("message_properties"), "Message Properties"
+      assert.equal Inflector.titleize("message properties to keep"), "Message Properties to Keep"
 
   describe "underscore", ->
     it "should convert camelCased words to underscored words", ->
-      Inflector.underscore("MessageProperties").should.equal "message_properties"
-      Inflector.underscore("messageProperties").should.equal "message_properties"
+      assert.equal Inflector.underscore("MessageProperties"), "message_properties"
+      assert.equal Inflector.underscore("messageProperties"), "message_properties"
 
     it "should deal with acronyms", ->
-      Inflector.underscore("MP").should.equal "mp"
-      Inflector.underscore("HTTPConnection").should.equal "http_connection"
+      assert.equal Inflector.underscore("MP"), "mp"
+      assert.equal Inflector.underscore("HTTPConnection"), "http_connection"
 
   describe "dasherize", ->
     it "should convert words with spaces into words with dashes", ->
-      Inflector.dasherize("A really cool Feature").should.equal "a-really-cool-feature"
+      assert.equal Inflector.dasherize("A really cool Feature"), "a-really-cool-feature"

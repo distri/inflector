@@ -209,10 +209,6 @@ Adds all of these sweet inflections to `String.prototype`. To each their own.
 
         return inflector
 
-Expose the current version from `package.json`.
-
-    inflector.version = require('../package.json').version
-
 Export the inflector.
 
     module.exports = inflector

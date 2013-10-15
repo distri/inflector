@@ -1,7 +1,5 @@
 require("../source/inflector").pollute()
 
-assert = require "assert"
-
 describe "Polluted String", ->
   it "should have inflector methods", ->
     assert.equal "String".constantize(), String
