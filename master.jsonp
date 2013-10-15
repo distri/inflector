@@ -1,15 +1,4 @@
-<!DOCTYPE html>
-<html manifest="manifest.appcache?1381872968115">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<script src="http://strd6.github.io/require/v0.2.2.js"></script>
-</head>
-<body>
-<script>
-;(function(PACKAGE) {
-var require = Require.generateFor(PACKAGE);
-require('./source/inflector')
-})({
+window["STRd6/inflecta:master"]({
   "version": "0.1.0",
   "source": {
     ".gitignore": {
@@ -228,6 +217,3 @@ require('./source/inflector')
     "url": "http://strd6.github.io/editor/"
   }
 });
-</script>
-</body>
-</html>
