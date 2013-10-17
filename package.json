@@ -1,6 +1,6 @@
 {
   "name": "inflecta",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "description": "A better port of ActiveSupport Inflector to JS.",
   "main": "dist/inflector.js",
   "scripts": {
