@@ -1,3 +1,6 @@
+Rules
+=====
+
 These rules are used by the [inflector](inflector.html).
 
 This `matcher` helper will let us construct rules easier. The default `replacement` is the entire match unchanged.

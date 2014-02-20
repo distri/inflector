@@ -1,3 +1,6 @@
+Inflecta
+========
+
 Load our word lists and rules for inflecting from [rules](rules.html).
 
     {
@@ -212,3 +215,13 @@ Adds all of these sweet inflections to `String.prototype`. To each their own.
 Export the inflector.
 
     module.exports = inflector
+
+Interactive Docs
+----------------
+
+Set up interactive demos for docs.
+
+[Interactive Runtime](/docs/interactive_runtime)
+
+>     #! setup
+>     require "/interactive_runtime"
