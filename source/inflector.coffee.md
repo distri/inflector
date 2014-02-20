@@ -224,4 +224,4 @@ Set up interactive demos for docs.
 [Interactive Runtime](/docs/interactive_runtime)
 
 >     #! setup
->     require "/interactive_runtime"
+>     require "../interactive_runtime"
