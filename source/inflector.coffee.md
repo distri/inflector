@@ -221,7 +221,7 @@ Interactive Docs
 
 Set up interactive demos for docs.
 
-[Interactive Runtime](../interactive_runtime)
+[Interactive Runtime](./interactive_runtime)
 
 >     #! setup
 >     require "/interactive_runtime"
