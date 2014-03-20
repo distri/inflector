@@ -1,5 +1,158 @@
 (function(pkg) {
-  // Expose a require for our package so scripts can access our modules
+  (function() {
+  var cacheFor, circularGuard, defaultEntryPoint, fileSeparator, generateRequireFn, global, isPackage, loadModule, loadPackage, loadPath, normalizePath, rootModule, startsWith,
+    __slice = [].slice;
+
+  fileSeparator = '/';
+
+  global = window;
+
+  defaultEntryPoint = "main";
+
+  circularGuard = {};
+
+  rootModule = {
+    path: ""
+  };
+
+  loadPath = function(parentModule, pkg, path) {
+    var cache, localPath, module, normalizedPath;
+    if (startsWith(path, '/')) {
+      localPath = [];
+    } else {
+      localPath = parentModule.path.split(fileSeparator);
+    }
+    normalizedPath = normalizePath(path, localPath);
+    cache = cacheFor(pkg);
+    if (module = cache[normalizedPath]) {
+      if (module === circularGuard) {
+        throw "Circular dependency detected when requiring " + normalizedPath;
+      }
+    } else {
+      cache[normalizedPath] = circularGuard;
+      try {
+        cache[normalizedPath] = module = loadModule(pkg, normalizedPath);
+      } finally {
+        if (cache[normalizedPath] === circularGuard) {
+          delete cache[normalizedPath];
+        }
+      }
+    }
+    return module.exports;
+  };
+
+  normalizePath = function(path, base) {
+    var piece, result;
+    if (base == null) {
+      base = [];
+    }
+    base = base.concat(path.split(fileSeparator));
+    result = [];
+    while (base.length) {
+      switch (piece = base.shift()) {
+        case "..":
+          result.pop();
+          break;
+        case "":
+        case ".":
+          break;
+        default:
+          result.push(piece);
+      }
+    }
+    return result.join(fileSeparator);
+  };
+
+  loadPackage = function(parentModule, pkg) {
+    var path;
+    path = pkg.entryPoint || defaultEntryPoint;
+    return loadPath(parentModule, pkg, path);
+  };
+
+  loadModule = function(pkg, path) {
+    var args, context, dirname, file, module, program, values;
+    if (!(file = pkg.distribution[path])) {
+      throw "Could not find file at " + path + " in " + pkg.name;
+    }
+    program = file.content;
+    dirname = path.split(fileSeparator).slice(0, -1).join(fileSeparator);
+    module = {
+      path: dirname,
+      exports: {}
+    };
+    context = {
+      require: generateRequireFn(pkg, module),
+      global: global,
+      module: module,
+      exports: module.exports,
+      PACKAGE: pkg,
+      __filename: path,
+      __dirname: dirname
+    };
+    args = Object.keys(context);
+    values = args.map(function(name) {
+      return context[name];
+    });
+    Function.apply(null, __slice.call(args).concat([program])).apply(module, values);
+    return module;
+  };
+
+  isPackage = function(path) {
+    if (!(startsWith(path, fileSeparator) || startsWith(path, "." + fileSeparator) || startsWith(path, ".." + fileSeparator))) {
+      return path.split(fileSeparator)[0];
+    } else {
+      return false;
+    }
+  };
+
+  generateRequireFn = function(pkg, module) {
+    if (module == null) {
+      module = rootModule;
+    }
+    if (pkg.name == null) {
+      pkg.name = "ROOT";
+    }
+    return function(path) {
+      var otherPackage;
+      if (isPackage(path)) {
+        if (!(otherPackage = pkg.dependencies[path])) {
+          throw "Package: " + path + " not found.";
+        }
+        if (otherPackage.name == null) {
+          otherPackage.name = path;
+        }
+        return loadPackage(rootModule, otherPackage);
+      } else {
+        return loadPath(module, pkg, path);
+      }
+    };
+  };
+
+  if (typeof exports !== "undefined" && exports !== null) {
+    exports.generateFor = generateRequireFn;
+  } else {
+    global.Require = {
+      generateFor: generateRequireFn
+    };
+  }
+
+  startsWith = function(string, prefix) {
+    return string.lastIndexOf(prefix, 0) === 0;
+  };
+
+  cacheFor = function(pkg) {
+    if (pkg.cache) {
+      return pkg.cache;
+    }
+    Object.defineProperty(pkg, "cache", {
+      value: {}
+    });
+    return pkg.cache;
+  };
+
+}).call(this);
+
+//# sourceURL=main.coffee
   window.require = Require.generateFor(pkg);
 })({
   "source": {
@@ -19,6 +172,12 @@
       "path": "README.md",
       "mode": "100644",
       "content": "[![Build Status](https://travis-ci.org/STRd6/inflecta.png?branch=master)](https://travis-ci.org/STRd6/inflecta)\n\nInflecta\n========\n\nWhat? Another ActiveSupport::Inflector port? Yeah, sorry.\n\nThe primary difference between **inflecta** and other ports is that **inflecta** translates the Ruby idioms to JavaScript idioms. It goes all the way.\n\nThe most important method is `constantize` which is not even attempted in most ports. In fact, the only reason we really need to pluralize or singularize things is so that we can automatically determine the class to instantiate from the name of the data key. That is the whole point of `ActiveSupport::Inflector`, `humanize` is just a nice side effect.\n\nIn Ruby the scope resolution operator is `::`. JavaScript doesn't have any such thing, instead people generally namespace classes using a module pattern like `MyApp.Models.MyModel`. For that reason **inflecta** uses `.` rather than blindly copying the Ruby scope resolution operator.\n\nIn JavaScript variables and properties are usually named with camel case. In Ruby they are named with underscores. It generally doesn't make a big difference, but if we want to implement `humanize` then it better work with our default conventions.\n\nReal sorry about the name, but inflector was taken on npm.\n",
+      "type": "blob"
+    },
+    "interactive_runtime.coffee.md": {
+      "path": "interactive_runtime.coffee.md",
+      "mode": "100644",
+      "content": "Interactive Runtime\n-------------------\n\nRegister our interactive documentation runtime components.\n\n    inflector = require \"/source/inflector\"\n\n    Object.keys(inflector).forEach (method) ->\n      return if method is \"version\"\n      return if method is \"pollute\"\n\n      Interactive.register method, ({source, runtimeElement}) ->\n        outputElement = document.createElement \"pre\"\n        runtimeElement.empty().append outputElement\n\n        outputElement.textContent = source.split(\"\\n\").map (word) ->\n          result = inflector[method](word)\n        .join(\"\\n\")\n",
       "type": "blob"
     },
     "package.json": {
@@ -86,15 +245,14 @@
       "mode": "100644",
       "content": "Test Helper\n===========\n\n    global.assert = require \"assert\"\n",
       "type": "blob"
-    },
-    "interactive_runtime.coffee.md": {
-      "path": "interactive_runtime.coffee.md",
-      "mode": "100644",
-      "content": "Interactive Runtime\n-------------------\n\nRegister our interactive documentation runtime components.\n\n    inflector = require \"/source/inflector\"\n\n    Object.keys(inflector).forEach (method) ->\n      return if method is \"version\"\n      return if method is \"pollute\"\n\n      Interactive.register method, ({source, runtimeElement}) ->\n        outputElement = document.createElement \"pre\"\n        runtimeElement.empty().append outputElement\n\n        outputElement.textContent = source.split(\"\\n\").map (word) ->\n          result = inflector[method](word)\n        .join(\"\\n\")\n",
-      "type": "blob"
     }
   },
   "distribution": {
+    "interactive_runtime": {
+      "path": "interactive_runtime",
+      "content": "(function() {\n  var inflector;\n\n  inflector = require(\"/source/inflector\");\n\n  Object.keys(inflector).forEach(function(method) {\n    if (method === \"version\") {\n      return;\n    }\n    if (method === \"pollute\") {\n      return;\n    }\n    return Interactive.register(method, function(_arg) {\n      var outputElement, runtimeElement, source;\n      source = _arg.source, runtimeElement = _arg.runtimeElement;\n      outputElement = document.createElement(\"pre\");\n      runtimeElement.empty().append(outputElement);\n      return outputElement.textContent = source.split(\"\\n\").map(function(word) {\n        var result;\n        return result = inflector[method](word);\n      }).join(\"\\n\");\n    });\n  });\n\n}).call(this);\n\n//# sourceURL=interactive_runtime.coffee",
+      "type": "blob"
+    },
     "package": {
       "path": "package",
       "content": "module.exports = {\"name\":\"inflecta\",\"version\":\"0.8.3\",\"description\":\"A better port of ActiveSupport Inflector to JS.\",\"main\":\"dist/inflector.js\",\"scripts\":{\"prepublish\":\"script/prepublish\",\"test\":\"script/test\"},\"files\":[\"dist\"],\"repository\":{\"type\":\"git\",\"url\":\"https://github.com/STRd6/inflector\"},\"keywords\":[\"inflector\"],\"devDependencies\":{\"should\":\"1.2.2\",\"coffee-script\":\"~1.6.3\",\"mocha\":\"~1.12.0\",\"uglify-js\":\"~2.3.6\",\"docco\":\"~0.6.2\",\"browserify\":\"~2.26.0\"},\"author\":\"\",\"license\":\"MIT\",\"bugs\":{\"url\":\"https://github.com/STRd6/inflector/issues\"}};",
@@ -129,11 +287,6 @@
       "path": "test_helper",
       "content": "(function() {\n  global.assert = require(\"assert\");\n\n}).call(this);\n\n//# sourceURL=test_helper.coffee",
       "type": "blob"
-    },
-    "interactive_runtime": {
-      "path": "interactive_runtime",
-      "content": "(function() {\n  var inflector;\n\n  inflector = require(\"/source/inflector\");\n\n  Object.keys(inflector).forEach(function(method) {\n    if (method === \"version\") {\n      return;\n    }\n    if (method === \"pollute\") {\n      return;\n    }\n    return Interactive.register(method, function(_arg) {\n      var outputElement, runtimeElement, source;\n      source = _arg.source, runtimeElement = _arg.runtimeElement;\n      outputElement = document.createElement(\"pre\");\n      runtimeElement.empty().append(outputElement);\n      return outputElement.textContent = source.split(\"\\n\").map(function(word) {\n        var result;\n        return result = inflector[method](word);\n      }).join(\"\\n\");\n    });\n  });\n\n}).call(this);\n\n//# sourceURL=interactive_runtime.coffee",
-      "type": "blob"
     }
   },
   "progenitor": {
@@ -148,7 +301,7 @@
     "owner": {
       "login": "STRd6",
       "id": 18894,
-      "avatar_url": "https://gravatar.com/avatar/33117162fff8a9cf50544a604f60c045?d=https%3A%2F%2Fidenticons.github.com%2F39df222bffe39629d904e4883eabc654.png&r=x",
+      "avatar_url": "https://avatars.githubusercontent.com/u/18894?",
       "gravatar_id": "33117162fff8a9cf50544a604f60c045",
       "url": "https://api.github.com/users/STRd6",
       "html_url": "https://github.com/STRd6",
@@ -205,14 +358,14 @@
     "labels_url": "https://api.github.com/repos/STRd6/inflecta/labels{/name}",
     "releases_url": "https://api.github.com/repos/STRd6/inflecta/releases{/id}",
     "created_at": "2013-08-11T18:21:15Z",
-    "updated_at": "2013-12-24T01:01:42Z",
-    "pushed_at": "2013-12-24T01:01:42Z",
+    "updated_at": "2014-03-20T20:48:05Z",
+    "pushed_at": "2014-03-20T20:48:04Z",
     "git_url": "git://github.com/STRd6/inflecta.git",
     "ssh_url": "git@github.com:STRd6/inflecta.git",
     "clone_url": "https://github.com/STRd6/inflecta.git",
     "svn_url": "https://github.com/STRd6/inflecta",
     "homepage": null,
-    "size": 580,
+    "size": 708,
     "stargazers_count": 0,
     "watchers_count": 0,
     "language": "CoffeeScript",
@@ -221,9 +374,9 @@
     "has_wiki": true,
     "forks_count": 0,
     "mirror_url": null,
-    "open_issues_count": 0,
+    "open_issues_count": 1,
     "forks": 0,
-    "open_issues": 0,
+    "open_issues": 1,
     "watchers": 0,
     "default_branch": "master",
     "master_branch": "master",
@@ -235,7 +388,7 @@
     "network_count": 0,
     "subscribers_count": 1,
     "branch": "master",
-    "defaultBranch": "master"
+    "publishBranch": "gh-pages"
   },
   "dependencies": {}
 });
