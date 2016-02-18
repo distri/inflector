@@ -139,7 +139,7 @@
   "version": "0.2.1",
   "entryPoint": "source/inflector",
   "repository": {
-    "branch": "master",
+    "branch": "v0.2.1",
     "default_branch": "master",
     "full_name": "distri/inflector",
     "homepage": null,
